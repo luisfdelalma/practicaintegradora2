@@ -1,29 +1,26 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const userRouter = require('./routes/users.router')
-const userProduct = require('./routes/products.router')
-const cartRouter = require('../src/routes/cart.router.js')
+import express from 'express'
+import passport from 'passport'
+import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
+import sessionsRouter from './routes/sessions.routes.js'
+import initializePassport from './passport/passport.config.js'
+
+// Config
+dotenv.config()
 const app = express()
-const PORT = 8080
-const passport = require("passport")
 
+// Database
+import './database.js'
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`)
-
-})
-
+// Middlewares
 app.use(express.json())
-app.use(passport.initialize());
+app.use(cookieParser())
+initializePassport()
+app.use(passport.initialize())
 
-mongoose.connect('mongodb+srv://luisfdlta:Mejorsolo1095@cluster0.aauduvj.mongodb.net/?retryWrites=true&w=majority')
-    .then(() => {
-        console.log("Connected to MongoDB")
-    })
-    .catch(error => {
-        console.log(`${error} error`)
-    })
+// Routes
+app.use('/api/sessions', sessionsRouter)
 
-app.use('/api/users', userRouter)
-app.use('/api/products', userProduct)
-app.use('api/cart', cartRouter)
+// Server
+const PORT = process.env.PORT || 8080
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
