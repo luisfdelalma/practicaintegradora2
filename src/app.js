@@ -1,26 +1,29 @@
-import express from 'express'
-import passport from 'passport'
-import dotenv from 'dotenv'
-import cookieParser from 'cookie-parser'
-import sessionsRouter from './routes/sessions.routes.js'
-import initializePassport from './passport/passport.config.js'
+const express = require("express")
+const exphbs = require("express-handlebars")
+const mongoose = require("mongoose")
+const productsRouter = require("./routes/products.router")
+const cartsRouter = require("./routes/carts.router")
+const path = require("path")
 
-// Config
-dotenv.config()
+
 const app = express()
+const PORT = 8080
 
-// Database
-import './database.js'
+// Handle bars config
+app.engine("handlebars", exphbs.engine())
+app.set("view engine", "handlebars")
+app.set("views", path.join(__dirname, "views"))
 
-// Middlewares
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+})
+
 app.use(express.json())
-app.use(cookieParser())
-initializePassport()
-app.use(passport.initialize())
 
-// Routes
-app.use('/api/sessions', sessionsRouter)
+const environment = async () => {
+    await mongoose.connect("mongodb+srv://luisfdlta:Mejorsolo1095@cluster0.aauduvj.mongodb.net/?retryWrites=true&w=majority")
+}
+environment()
 
-// Server
-const PORT = process.env.PORT || 8080
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+app.use("/api/products", productsRouter)
+app.use("/api/carts", cartsRouter)
