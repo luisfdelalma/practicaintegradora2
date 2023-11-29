@@ -26,9 +26,8 @@ router.post("/register", async (req, res) => {
 
 
         let result = await userModel.create(newUser)
-        const access_token = generateToken(newUser)
         // res.render("successregister")
-        res.send({ status: "success", payload: result, access_token })
+        res.send({ status: "success", payload: result })
 
     } catch (error) {
         console.log("Error al obtener el usuario" + error)
